@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>News App</title>
+  <link rel="stylesheet" href="index.css">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+</head>
+<body>
+  <div id="app">
+    <h1 class="title">News App</h1>
+    <ul class="article">
+      <li class="article-item" v-for="article in articles" :key="article.id">
+        <h2 class="article-title">
+            <a :href="article.link" target="_blank">{{ article.title }}</a>
+        </h2>
+        <p class="article-description">{{ article.description }}</p>
+        <ul class="article-tags">
+          <li class="article-tag" v-for="tag in article.tags" :key="tag.id">{{ tag }}</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        articles: []
+      },
+      mounted() {
+        fetch('all_topics.json')
+          .then(response => response.json())
+          .then(data => {
+            this.articles = data;
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      }
+    });
+  </script>
+</body>
+</html>
