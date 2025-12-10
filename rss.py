@@ -125,8 +125,8 @@ news_links = [
     'https://rss.itmedia.co.jp/rss/2.0/news_bursts.xml',
     'https://rss.itmedia.co.jp/rss/2.0/business.xml'
 ]
-limit_per_feed = 4
-RATE_LIMIT_SLEEP_SECONDS = 12  # free tier: ~5 RPM, so wait ~12s between tag calls
+limit_per_feed = 2  # Reduced to minimize token usage
+RATE_LIMIT_SLEEP_SECONDS = 15  # Increased to stay safely within free tier
 all_topics = []
 for news_link in news_links:
     topics = get_topics(news_link)[:limit_per_feed]
