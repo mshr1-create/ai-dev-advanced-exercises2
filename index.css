@@ -2,6 +2,35 @@
   margin-left: 10px;
 }
 
+.category-selector {
+  margin-bottom: 20px;
+}
+
+.category-selector p {
+  margin: 0 0 10px 0;
+  font-weight: bold;
+}
+
+.category-selector select {
+  padding: 8px 10px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: solid 2px #6091d3;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.category-selector select:hover {
+  border-color: #4070b0;
+  box-shadow: 0 0 4px rgba(96, 145, 211, 0.3);
+}
+
+.category-selector select:focus {
+  outline: none;
+  border-color: #2d5090;
+  box-shadow: 0 0 6px rgba(45, 80, 144, 0.5);
+}
+
 .article {
   list-style: none;
   padding: 0;
