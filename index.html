@@ -9,7 +9,20 @@
 </head>
 <body>
   <div id="app">
-    <h1 class="title">News App</h1>
+    <h1 class="title">最新ニュース一覧</h1>
+    <section class="category-selector">
+      <p>カテゴリを選択：</p>
+      <select v-model="selectedCategory" @change="filterArticles" id="category-select">
+        <option value="">--すべて表示--</option>
+        <option value="政治">政治</option>
+        <option value="経済">経済</option>
+        <option value="IT">IT</option>
+        <option value="スポーツ">スポーツ</option>
+        <option value="社会">社会</option>
+        <option value="企業">企業</option>
+      </select>
+    </section>
+    <section class="articles">
     <ul class="article">
       <li class="article-item" v-for="article in articles" :key="article.id">
         <h2 class="article-title">
@@ -21,23 +34,38 @@
         </ul>
       </li>
     </ul>
+    </section>
   </div>
 
   <script>
     new Vue({
       el: '#app',
       data: {
-        articles: []
+        articles: [],
+        allArticles: [],
+        selectedCategory: ''
       },
       mounted() {
         fetch('all_topics.json')
           .then(response => response.json())
           .then(data => {
+            this.allArticles = data;
             this.articles = data;
           })
           .catch(error => {
             console.error('Error:', error);
           });
+      },
+      methods: {
+        filterArticles() {
+          if (this.selectedCategory === '') {
+            this.articles = this.allArticles;
+          } else {
+            this.articles = this.allArticles.filter(article => 
+              article.tags && article.tags.includes(this.selectedCategory)
+            );
+          }
+        }
       }
     });
   </script>
