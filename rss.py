@@ -127,12 +127,13 @@ news_links = [
 ]
 limit_per_feed = 2  # Reduced to minimize token usage
 RATE_LIMIT_SLEEP_SECONDS = 15  # Increased to stay safely within free tier
+MIN_EXPECTED_TOPICS = 6  # current max items = 3 feeds * 2 items each
 all_topics = []
 for news_link in news_links:
     topics = get_topics(news_link)[:limit_per_feed]
     all_topics += topics
-if len(all_topics) < 10:
-    print(f"[WARN] collected topics are below expected count: {len(all_topics)} < 10")
+if len(all_topics) < MIN_EXPECTED_TOPICS:
+    print(f"[WARN] collected topics are below expected count: {len(all_topics)} < {MIN_EXPECTED_TOPICS}")
 for topic in all_topics:
     content = topic['title'] + ' ' + topic['description']
     topic['tags'] = tag_topic(content)

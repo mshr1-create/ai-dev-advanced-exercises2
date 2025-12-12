@@ -30,16 +30,6 @@ py rss.py
 ```
 実行後、`all_topics.json` に最新のニュース情報が保存されます（実行時間: 約1～2分）。
 
-#### 方法2: バッチスクリプトを使用（Windows）
-```bash
-update_news.bat
-```
-
-#### 方法3: シェルスクリプトを使用（macOS/Linux）
-```bash
-./update_news.sh
-```
-
 ### Webサーバーの起動
 
 ```bash
