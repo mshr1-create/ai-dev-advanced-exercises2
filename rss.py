@@ -125,9 +125,9 @@ news_links = [
     'https://rss.itmedia.co.jp/rss/2.0/news_bursts.xml',
     'https://rss.itmedia.co.jp/rss/2.0/business.xml'
 ]
-limit_per_feed = 2  # Reduced to minimize token usage
-RATE_LIMIT_SLEEP_SECONDS = 15  # Increased to stay safely within free tier
-MIN_EXPECTED_TOPICS = 6  # current max items = 3 feeds * 2 items each
+limit_per_feed = 4  # ensure >= 10 items across 3 feeds (max 12)
+RATE_LIMIT_SLEEP_SECONDS = 15  # stay safely within free tier
+MIN_EXPECTED_TOPICS = 10  # minimum expected total items
 all_topics = []
 for news_link in news_links:
     topics = get_topics(news_link)[:limit_per_feed]
