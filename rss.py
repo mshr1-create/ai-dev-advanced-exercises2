@@ -125,14 +125,15 @@ news_links = [
     'https://rss.itmedia.co.jp/rss/2.0/news_bursts.xml',
     'https://rss.itmedia.co.jp/rss/2.0/business.xml'
 ]
-limit_per_feed = 2  # Reduced to minimize token usage
-RATE_LIMIT_SLEEP_SECONDS = 15  # Increased to stay safely within free tier
+limit_per_feed = 4  # ensure >= 10 items across 3 feeds (max 12)
+RATE_LIMIT_SLEEP_SECONDS = 15  # stay safely within free tier
+MIN_EXPECTED_TOPICS = 10  # minimum expected total items
 all_topics = []
 for news_link in news_links:
     topics = get_topics(news_link)[:limit_per_feed]
     all_topics += topics
-if len(all_topics) < 10:
-    print(f"[WARN] collected topics are below expected count: {len(all_topics)} < 10")
+if len(all_topics) < MIN_EXPECTED_TOPICS:
+    print(f"[WARN] collected topics are below expected count: {len(all_topics)} < {MIN_EXPECTED_TOPICS}")
 for topic in all_topics:
     content = topic['title'] + ' ' + topic['description']
     topic['tags'] = tag_topic(content)

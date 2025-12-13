@@ -20,6 +20,10 @@
         <option value="スポーツ">スポーツ</option>
         <option value="社会">社会</option>
         <option value="企業">企業</option>
+        <option value="エンタメ">エンタメ</option>
+        <option value="ビジネス">ビジネス</option>
+        <option value="AI">AI</option>
+        <option value="健康">健康</option>
       </select>
     </section>
     <section class="articles">
@@ -43,7 +47,33 @@
       data: {
         articles: [],
         allArticles: [],
-        selectedCategory: ''
+        selectedCategory: '',
+        // 細分類タグを緩いカテゴリへマッピング
+        tagCategoryMap: {
+          '情報セキュリティ': 'IT',
+          'サイバーセキュリティ': 'IT',
+          'クラウド': 'IT',
+          'AI': 'IT',
+          '障害': 'IT',
+          'ソフトウェア': 'IT',
+          '写真': 'IT',
+          'ランキング': '社会',
+          '調査': '社会',
+          '心理': '社会',
+          'メディア': '社会',
+          '働き方': '社会',
+          '出版': '社会',
+          '企業': '企業',
+          '経済': '経済',
+          '政治': '政治',
+          'スポーツ': 'スポーツ',
+          'サッカー': 'スポーツ',
+          'Jリーグ': 'スポーツ',
+          '野球': 'スポーツ',
+          'プロ野球': 'スポーツ',
+          'バレーボール': 'スポーツ',
+          '格闘技': 'スポーツ'
+        }
       },
       mounted() {
         fetch('all_topics.json')
@@ -60,11 +90,19 @@
         filterArticles() {
           if (this.selectedCategory === '') {
             this.articles = this.allArticles;
-          } else {
-            this.articles = this.allArticles.filter(article => 
-              article.tags && article.tags.includes(this.selectedCategory)
-            );
+            return;
           }
+          const category = this.selectedCategory;
+          const map = this.tagCategoryMap;
+          this.articles = this.allArticles.filter(article => {
+            if (!article.tags || article.tags.length === 0) return false;
+            // タグが直接カテゴリと一致する、またはマップでカテゴリに束ねられる場合に一致
+            return article.tags.some(tag => {
+              if (tag === category) return true;
+              const coarse = map[tag];
+              return coarse === category;
+            });
+          });
         }
       }
     });
