@@ -119,24 +119,62 @@ def tag_topic(content):
         print(f"[WARN] タグ生成結果のパースに失敗しました: {e}")
         return []
 
+def load_cached_topics(path='all_topics.json'):
+    if not os.path.exists(path):
+        return []
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            cached = json.load(f)
+            return cached if isinstance(cached, list) else []
+    except Exception as e:
+        print(f"[WARN] 旧データの読み込みに失敗しました: {e}")
+        return []
+
+
+def collect_topics(feeds, per_feed_limit, max_items):
+    topics = []
+    for feed in feeds:
+        fetched = get_topics(feed)[:per_feed_limit]
+        for item in fetched:
+            if len(topics) >= max_items:
+                return topics
+            topics.append(item)
+    return topics
+
+
 #実行
 news_links = [
-    'https://news.yahoo.co.jp/rss/categories/sports.xml',
+    'https://news.yahoo.co.jp/rss/categories/world.xml',
+    'https://news.yahoo.co.jp/rss/categories/domestic.xml',
+    'https://news.yahoo.co.jp/rss/categories/business.xml',
     'https://rss.itmedia.co.jp/rss/2.0/news_bursts.xml',
-    'https://rss.itmedia.co.jp/rss/2.0/business.xml'
+    'https://rss.itmedia.co.jp/rss/2.0/business.xml',
+    'https://news.yahoo.co.jp/rss/categories/science.xml',
 ]
-limit_per_feed = 4  # ensure >= 10 items across 3 feeds (max 12)
+LIMIT_PER_FEED = 3  # smaller per-feed slice to stay within free tier
+MAX_TOTAL_ITEMS = 12  # hard cap on collected items
+MAX_TAGGING_ITEMS = 10  # hard cap on API calls
 RATE_LIMIT_SLEEP_SECONDS = 15  # stay safely within free tier
 MIN_EXPECTED_TOPICS = 10  # minimum expected total items
-all_topics = []
-for news_link in news_links:
-    topics = get_topics(news_link)[:limit_per_feed]
-    all_topics += topics
+
+all_topics = collect_topics(news_links, LIMIT_PER_FEED, MAX_TOTAL_ITEMS)
 if len(all_topics) < MIN_EXPECTED_TOPICS:
-    print(f"[WARN] collected topics are below expected count: {len(all_topics)} < {MIN_EXPECTED_TOPICS}")
-for topic in all_topics:
+    fallback_topics = load_cached_topics()
+    missing = MIN_EXPECTED_TOPICS - len(all_topics)
+    if fallback_topics:
+        used = fallback_topics[:missing]
+        all_topics.extend(used)
+        print(f"[INFO] 旧データをフォールバックとして {len(used)} 件 追加しました")
+    else:
+        print(f"[WARN] collected topics are below expected count: {len(all_topics)} < {MIN_EXPECTED_TOPICS} (fallback unavailable)")
+
+for idx, topic in enumerate(all_topics):
+    if idx >= MAX_TAGGING_ITEMS or topic.get('tags'):
+        topic.setdefault('tags', [])
+        continue
     content = topic['title'] + ' ' + topic['description']
     topic['tags'] = tag_topic(content)
     time.sleep(RATE_LIMIT_SLEEP_SECONDS)
+
 with open('all_topics.json', 'w', encoding='utf-8') as f:
     json.dump(all_topics, f, indent=4, ensure_ascii=False)
