@@ -14,16 +14,20 @@
       <p>カテゴリを選択：</p>
       <select v-model="selectedCategory" @change="filterArticles" id="category-select">
         <option value="">--すべて表示--</option>
+        <option value="国際">国際</option>
+        <option value="国内">国内</option>
         <option value="政治">政治</option>
         <option value="経済">経済</option>
+        <option value="ビジネス">ビジネス</option>
         <option value="IT">IT</option>
         <option value="スポーツ">スポーツ</option>
         <option value="社会">社会</option>
         <option value="企業">企業</option>
         <option value="エンタメ">エンタメ</option>
-        <option value="ビジネス">ビジネス</option>
         <option value="AI">AI</option>
+        <option value="科学">科学</option>
         <option value="健康">健康</option>
+        <option value="その他">その他</option>
       </select>
     </section>
     <section class="articles">
@@ -50,6 +54,30 @@
         selectedCategory: '',
         // 細分類タグを緩いカテゴリへマッピング
         tagCategoryMap: {
+          // 上位カテゴリ（直接一致）
+          '国際': '国際',
+          '国内': '国内',
+          '政治': '政治',
+          '経済': '経済',
+          'ビジネス': 'ビジネス',
+          'IT': 'IT',
+          'スポーツ': 'スポーツ',
+          '社会': '社会',
+          '企業': '企業',
+          'エンタメ': 'エンタメ',
+          'AI': 'AI',
+          '科学': '科学',
+          '健康': '健康',
+          // 同義語・細分類 → 上位カテゴリ
+          '世界': '国際',
+          '海外': '国際',
+          '国内ニュース': '国内',
+          '政策': '政治',
+          '選挙': '政治',
+          '景気': '経済',
+          '金融': '経済',
+          '市場': 'ビジネス',
+          '産業': 'ビジネス',
           '情報セキュリティ': 'IT',
           'サイバーセキュリティ': 'IT',
           'クラウド': 'IT',
@@ -57,6 +85,7 @@
           '障害': 'IT',
           'ソフトウェア': 'IT',
           '写真': 'IT',
+          'テクノロジー': 'IT',
           'ランキング': '社会',
           '調査': '社会',
           '心理': '社会',
@@ -64,15 +93,18 @@
           '働き方': '社会',
           '出版': '社会',
           '企業': '企業',
-          '経済': '経済',
-          '政治': '政治',
+          '芸能': 'エンタメ',
+          '映画': 'エンタメ',
+          '音楽': 'エンタメ',
           'スポーツ': 'スポーツ',
           'サッカー': 'スポーツ',
           'Jリーグ': 'スポーツ',
           '野球': 'スポーツ',
           'プロ野球': 'スポーツ',
           'バレーボール': 'スポーツ',
-          '格闘技': 'スポーツ'
+          '格闘技': 'スポーツ',
+          '医療': '健康',
+          'ヘルスケア': '健康'
         }
       },
       mounted() {
@@ -98,8 +130,9 @@
             if (!article.tags || article.tags.length === 0) return false;
             // タグが直接カテゴリと一致する、またはマップでカテゴリに束ねられる場合に一致
             return article.tags.some(tag => {
-              if (tag === category) return true;
-              const coarse = map[tag];
+              const norm = (tag || '').toString().trim();
+              if (norm === category) return true;
+              const coarse = map[norm];
               return coarse === category;
             });
           });
